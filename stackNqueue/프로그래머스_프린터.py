@@ -1,22 +1,16 @@
-def solution(record):
-    answer = []
-    temp = []
-    hash = {}
-    for rec in record:
-        r = rec.split(" ")
-        if r[1] not in hash.keys():
-            hash[r[1]] = r[2]
-        elif r[1] in hash.keys() and r[0] != "Leave":
-            hash[r[1]] = r[2]
-        else:
-            pass
+def solution(priorities, location):
+    answer = 0
+    loc = [i for i in range(len(priorities))]
+    final_loc = []
     
-    for rec in record:
-        r = rec.split(" ")
-        if r[0] == "Enter":
-            answer.append(str(hash[r[1]]) + "님이 들어왔습니다.")
-        elif r[0] == "Leave":
-            answer.append(str(hash[r[1]]) + "님이 나갔습니다.")
+    while priorities :
+        if priorities[0] == max(priorities):
+            final_loc.append(loc.pop(0))
+            priorities.pop(0)
         else:
-            pass
+            priorities.append(priorities.pop(0))
+            loc.append(loc.pop(0))
+            
+    answer = final_loc.index(location) + 1
+    
     return answer
