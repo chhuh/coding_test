@@ -1,2 +1,2 @@
 # coding_test
-codes for preparing coding test
+- codes for preparing coding test
