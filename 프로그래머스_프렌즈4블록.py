@@ -1,30 +1,35 @@
-Dictionary : Key와 Value를 한 쌍으로 가지는 자료형이다.
-1. 생성
-    - dic = {}
-    - dic = {1 : 'hi'}
+def turn_board(m, n, board):
+    newboard = [[0]*m for i in range(n)]
+    for i in range(m):
+        for j in range(n):
+            newboard[j][i] = board[i][j] 
+    return newboard
+
+def del_board(m, n, board):
+    newboard = turn_board(m,n,board)
+    for i in range(n):
+        newboard[i] = ''.join(newboard[i]).replace("del", "").rjust(m, " ")
+    newboard = turn_board(n,m,newboard)
+    return newboard
+
+def solution(m, n, board):
+    answer = 0
+    del_set = set()
+    board = list(map(list, board))
     
-2. 추가
-    - >>> a = {1: 'a'}
-      >>> a[2] = 'b'
-      >>> a
-      {1: 'a', 2: 'b'}
-      
-3. 삭제
-    - >>> del a[1]
-      >>> a
-      {2: 'b', 'name': 'pey', 3: [1, 2, 3]}
+    while True:
+        del_set = set()
+        for i in range(m-1):
+            for j in range(n-1):
+                if board[i][j] != " " and board[i][j] == board[i+1][j] and board[i+1][j] == board[i+1][j+1] and board[i+1][j+1] == board[i][j+1]:
+                    del_set.update([(i,j), (i+1, j), (i, j+1), (i+1, j+1)])
 
-4. 주의사항
-    - Key는 중복될 수 없음
-      >>> a = {1:'a', 1:'b'}
-      >>> a
-      {1: 'b'}
-
-    - list는 Key로 사용될 수 없음
-
-5. 관련 함수들
-    - keys() : keys()는 딕셔너리의 Key만을 모아서 dict_keys 객체를 돌려준다.
-    - values() : values()는 딕셔너리의 value만을 모아서 dict_values 객체를 돌려준다.
-    - items() : tems 함수는 Key와 Value의 쌍을 튜플로 묶은 값을 dict_items 객체로 돌려준다.
-    - clear() : clear 함수는 딕셔너리 안의 모든 요소를 삭제한다.
-    - get() : get(x) 함수는 x라는 Key에 대응되는 Value를 돌려준다.
+        if del_set:
+            answer += len(del_set)
+            for ds in del_set:
+                board[ds[0]][ds[1]] = "del"
+            board = del_board(m, n, board)
+            
+        else:
+            break
+    return answer
