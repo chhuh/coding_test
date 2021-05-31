@@ -1,45 +1,33 @@
-import sys
+import heapq
 
 def solution(N, road, K):
     answer = 0
     
-    roads = {i : {} for i in range(N)}
+    graph = [[] for _ in range(N)]
     
-    # 초기 roads작성
-    for r in road:
-        if r[0]-1 in roads and r[1]-1 in roads[r[0] - 1]:
-            if r[2] < roads[r[0] - 1][r[1] - 1]:
-                roads[r[0] - 1][r[1] - 1] = r[2]
-                roads[r[1] - 1][r[0] - 1] = r[2]       
-        else:
-            roads[r[0] - 1][r[1] - 1] = r[2]
-            roads[r[1] - 1][r[0] - 1] = r[2]
-    
-    # 0을 기준으로 한 초기 distance작성
+    for i, j, r in road:
+        graph[i-1].append([j-1, r])
+        graph[j-1].append([i-1, r])
+        
     distance = [0] + [sys.maxsize for _ in range(N-1)]
+    hpq = [[0,0]]
+    heapq.heapify(hpq)
     
-    for i in roads[0]:
-        distance[i] = roads[0][i]
-    
-    # 0을 기준으로 최단거리 검거된 마을 모임
-    visited = []
-    
-    while len(visited) != N:
-        mini = sys.maxsize
+    while hpq:
+        dist, node = heapq.heappop(hpq)
         
-        for i in range(1, N):
-            if i not in visited and distance[i] < mini:
-                mini  = distance[i]
-                town = i
-        
-        visited.append(town)
-        
-        for i in roads[town]:
-            if distance[i] > roads[town][i] + mini:
-                distance[i] = roads[town][i] + mini
-                
+        if dist > distance[node]:
+            continue
+            
+        for g in graph[node]:
+            new_node, new_dist = g[0], g[1]
+            new_dist += dist
+            
+            if new_dist < distance[new_node]:
+                distance[new_node] = new_dist
+                heapq.heappush(hpq, [new_dist, new_node])
+            
     for d in distance:
         if d <= K:
             answer += 1
-        
     return answer
