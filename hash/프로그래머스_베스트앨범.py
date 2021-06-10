@@ -1,24 +1,25 @@
 def solution(genres, plays):
     answer = []
-    genre_play_sum = {}
-    genre_dic ={}
     
-    for i in range(len(genres)):
-        if genres[i] not in genre_dic.keys():
-            genre_dic[genres[i]] = [(plays[i], i)]
-            genre_play_sum[genres[i]] = plays[i]
+    my_genre = {}
+    
+    for i, genre in enumerate(genres):
+        if genre in my_genre:
+            temp = my_genre[genre][0] + plays[i]
+            del my_genre[genre][0]
+            my_genre[genre].append((i, plays[i]))
+            my_genre[genre].sort(key = lambda x : (-x[1], x[0]))
+            my_genre[genre].insert(0, temp)
         else:
-            genre_dic[genres[i]].append((plays[i], i))
-            genre_play_sum[genres[i]] = genre_play_sum[genres[i]]+ plays[i]
-            
-    sorted_play_sum = sorted(genre_play_sum.items(), key=lambda x: x[1], reverse = True)   
+            my_genre[genre] = [plays[i], (i, plays[i])]
     
-    for key in sorted_play_sum:
-        sorted_list = genre_dic[key[0]]
-        sorted_list = sorted(sorted_list, key = lambda x : (-x[0], x[1]))
-        
-        for i in range(len(sorted_list)):
-            if i == 2:
-                break
-            answer.append(sorted_list[i][1])
+    my_val = sorted(list(my_genre.values()), key = lambda x : x[0], reverse = True)
+    
+    for val in my_val:
+        if len(val) < 3:
+            answer.append(val[1][0])
+        else:
+            answer.append(val[1][0])
+            answer.append(val[2][0])
+    
     return answer
