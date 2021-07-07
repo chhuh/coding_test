@@ -1,5 +1,5 @@
-import math
 from collections import deque
+import math
 
 def solution(progresses, speeds):
     answer = []
