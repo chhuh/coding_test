@@ -4,8 +4,7 @@ def solution(cacheSize, cities):
     
     answer = 0
     lower_cities = [i.lower() for i in cities]
-    
-    
+        
     queue = ["Default"]*cacheSize
     
     for lc in lower_cities:
@@ -17,5 +16,4 @@ def solution(cacheSize, cities):
             queue.pop(0)
             queue.append(lc)
             answer += 5
-    
     return answer
