@@ -15,29 +15,55 @@
     
 #     return answer
 
-from collections import deque
+# from collections import deque
+
+# def solution(priorities, location):
+#     answer = 0
+    
+#     mark = []
+#     mine = priorities[location]
+    
+#     for i, priority in enumerate(priorities):
+#         mark.append((priority, i))
+    
+#     p = 0
+    
+#     while priorities:
+#         if priorities[0] == max(priorities):
+#             p += 1
+#             priorities.pop(0)
+        
+#         else:
+#             mark.append(mark.pop(p))
+#             priorities.append(priorities.pop(0))
+        
+#     answer = mark.index((mine,location)) + 1
+    
+#     print(mark)
+#     return answer
 
 def solution(priorities, location):
     answer = 0
     
     mark = []
-    mine = priorities[location]
     
     for i, priority in enumerate(priorities):
-        mark.append((priority, i))
-    
-    p = 0
-    
-    while priorities:
-        if priorities[0] == max(priorities):
-            p += 1
-            priorities.pop(0)
-        
+        if i == location:
+            mark.append((1, priority))
         else:
-            mark.append(mark.pop(p))
-            priorities.append(priorities.pop(0))
-        
-    answer = mark.index((mine,location)) + 1
+            mark.append((0,priority))
     
-    print(mark)
+    num = 0
+    while priorities:
+        if priorities[0] == max(priorities) :
+            num += 1
+            priorities.pop(0)
+            temp = mark.pop(0)
+            if temp[0]:
+                answer = num
+                break
+        else:
+            priorities.append(priorities.pop(0))
+            mark.append(mark.pop(0))
+    
     return answer
