@@ -13,7 +13,7 @@ for i, j, dist in road:
     graph[i-1].append([dist, j-1])
     graph[j-1].append([dist, i-1])
         
-def D(src, dst):
+def D(src):
     distance = [sys.maxsize for _ in range(V)]
     distance[src] = 0
         
@@ -34,8 +34,12 @@ def D(src, dst):
                 distance[new_node] = new_dist
                 heapq.heappush(hpq, [new_dist, new_node])
                     
-    return distance[dst]
+    return distance
 
-if D(0,p1-1) != sys.maxsize and D(p1-1,p2-1) != sys.maxsize and D(p2-1,V-1) != sys.maxsize:
-    print(D(0,p1-1) + D(p1-1,p2-1) + D(p2-1,V-1))
-    
+start_distance = D(0)
+p1_distance = D(p1-1)
+p2_distance = D(p2-1)
+
+answer = min(start_distance[p1-1] + p1_distance[p2-1] + p2_distance[V-1], start_distance[p2-1] + p2_distance[p1-1] + p1_distance[V-1])
+
+print(answer if answer < sys.maxsize else -1)
