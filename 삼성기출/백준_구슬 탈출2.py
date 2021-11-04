@@ -9,12 +9,12 @@ dc = [0,0,1,-1]
 visited = [[[[False] * M for _ in range(N)] for _ in range(M)] for _ in range(N)]
 
 def tilt(r, c, dr, dc):
-    cnt = 0
-    while board[r+dr][c+dc] != "#" and board[r][c] != "O":
+    cnt = 0  
+    while board[r+dr][c+dc] != '#' and board[r][c] != 'O':
         r += dr
         c += dc
         cnt += 1
-        return r, c, cnt
+    return r, c, cnt
 
 for r in range(N):
     board.append(str(sys.stdin.readline().rstrip()))
@@ -27,36 +27,32 @@ for r in range(N):
             gr, gc = r, c
 
 queue = []
-queue.append((br,bc,rr,rc,1))
+queue.append((br,bc,rr,rc,0))
 visited[br][bc][rr][rc] = True
 
-def solve():
+def bfs():
     while queue:
         br, bc, rr, rc, depth = queue.pop(0)
-        if depth > 10:
+        if depth > 1:
             break
         for i in range(4):
-            nbr, nbc, bcnt = tilt(br, bc, dr[i], dc[i])
             nrr, nrc, rcnt = tilt(rr, rc, dr[i], dc[i])
+            nbr, nbc, bcnt = tilt(br, bc, dr[i], dc[i])
             if board[nbr][nbc] != "O":
                 if board[nrr][nrc] =="O":
-                    print(depth)
+                    print(depth+1)
                     return
-                if nrr == nbr and nrc == nbc:  # 겹쳤을 때
-                    if rcnt > bcnt:  # 이동거리가 많은 것을
-                        nrr -= dr[i]  # 한 칸 뒤로
+                if nrr == nbr and nrc == nbc:
+                    if rcnt > bcnt:
+                        nrr -= dr[i]
                         nrc -= dc[i]
                     else:
                         nbr -= dr[i]
                         nbc -= dc[i]
-                # breadth 탐색 후, 탐사 여부 체크
                 if not visited[nrr][nrc][nbr][nbc]:
                     visited[nrr][nrc][nbr][nbc] = True
-                    # 다음 depth의 breadth 탐색 위한 queue
                     queue.append((nrr, nrc, nbr, nbc, depth+1))
-    print(-1)  # 실패 시
+    print(-1)
 
-solve()
+bfs()
 
-
-        
