@@ -1,46 +1,45 @@
 import sys
 
 N, M = map(int, sys.stdin.readline().split())
+B = [list(sys.stdin.readline().rstrip()) for _ in range(N)]
 
-board = []
+dr = [0, 0, -1, 1]
+dc = [-1, 1, 0, 0]
 
-dr = [1,-1,0,0]
-dc = [0,0,1,-1]
+queue = []
 visited = [[[[False] * M for _ in range(N)] for _ in range(M)] for _ in range(N)]
 
+def init():
+    rr, rc, br, bc = 0, 0, 0, 0  # 초기화
+    for r in range(N):
+        for c in range(M):
+            if B[r][c] == 'R':
+                rr, rc = r, c
+            elif B[r][c] == 'B':
+                br, bc = r, c
+    queue.append((rr, rc, br, bc, 1))
+    visited[rr][rc][br][bc] = True
+
 def tilt(r, c, dr, dc):
-    cnt = 0  
-    while board[r+dr][c+dc] != '#' and board[r][c] != 'O':
+    cnt = 0
+    while B[r+dr][c+dc] != '#' and B[r][c] != 'O':
         r += dr
         c += dc
         cnt += 1
     return r, c, cnt
 
-for r in range(N):
-    board.append(str(sys.stdin.readline().rstrip()))
-    for c in range(M):
-        if board[r][c] == "B":
-            br, bc = r, c
-        if board[r][c] == "R":
-            rr, rc = r, c
-        if board[r][c] == "O":
-            gr, gc = r, c
-
-queue = []
-queue.append((br,bc,rr,rc,0))
-visited[br][bc][rr][rc] = True
-
 def bfs():
+    init()
     while queue:
-        br, bc, rr, rc, depth = queue.pop(0)
-        if depth > 1:
+        rr, rc, br, bc, depth = queue.pop(0)
+        if depth > 10:
             break
         for i in range(4):
             nrr, nrc, rcnt = tilt(rr, rc, dr[i], dc[i])
             nbr, nbc, bcnt = tilt(br, bc, dr[i], dc[i])
-            if board[nbr][nbc] != "O":
-                if board[nrr][nrc] =="O":
-                    print(depth+1)
+            if B[nbr][nbc] != 'O':
+                if B[nrr][nrc] == 'O':
+                    print(depth)
                     return
                 if nrr == nbr and nrc == nbc:
                     if rcnt > bcnt:
@@ -55,4 +54,3 @@ def bfs():
     print(-1)
 
 bfs()
-
