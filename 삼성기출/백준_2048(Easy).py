@@ -1,56 +1,88 @@
 import sys
+import copy
 
-N, M = map(int, sys.stdin.readline().split())
-B = [list(sys.stdin.readline().rstrip()) for _ in range(N)]
+N = int(sys.stdin.readline())
+board = [list(map(int, sys.stdin.readline().split())) for _ in range(N)]
 
-dr = [0, 0, -1, 1]
-dc = [-1, 1, 0, 0]
+ans = 0
 
-queue = []
-visited = [[[[False] * M for _ in range(N)] for _ in range(M)] for _ in range(N)]
-
-def init():
-    rr, rc, br, bc = 0, 0, 0, 0  # 초기화
-    for r in range(N):
-        for c in range(M):
-            if B[r][c] == 'R':
-                rr, rc = r, c
-            elif B[r][c] == 'B':
-                br, bc = r, c
-    queue.append((rr, rc, br, bc, 1))
-    visited[rr][rc][br][bc] = True
-
-def tilt(r, c, dr, dc):
-    cnt = 0
-    while B[r+dr][c+dc] != '#' and B[r][c] != 'O':
-        r += dr
-        c += dc
-        cnt += 1
-    return r, c, cnt
-
-def bfs():
-    init()
-    while queue:
-        rr, rc, br, bc, depth = queue.pop(0)
-        if depth > 10:
-            break
-        for i in range(4):
-            nrr, nrc, rcnt = tilt(rr, rc, dr[i], dc[i])
-            nbr, nbc, bcnt = tilt(br, bc, dr[i], dc[i])
-            if B[nbr][nbc] != 'O':
-                if B[nrr][nrc] == 'O':
-                    print(depth)
-                    return
-                if nrr == nbr and nrc == nbc:
-                    if rcnt > bcnt:
-                        nrr -= dr[i]
-                        nrc -= dc[i]
+def move(det):
+    if det == 0:
+        for c in range(N):
+            idx = 0
+            for r in range(1,N):
+                if board[r][c]:
+                    temp = board[r][c]
+                    board[r][c] = 0
+                    if board[idx][c] == 0:
+                        board[idx][c] = temp
+                    elif board[idx][c] == temp:
+                        board[idx][c] = temp * 2
+                        idx += 1
                     else:
-                        nbr -= dr[i]
-                        nbc -= dc[i]
-                if not visited[nrr][nrc][nbr][nbc]:
-                    visited[nrr][nrc][nbr][nbc] = True
-                    queue.append((nrr, nrc, nbr, nbc, depth+1))
-    print(-1)
+                        idx += 1
+                        board[idx][c] = temp
 
-bfs()
+    elif det == 1:
+        for c in range(N):
+            idx = N - 1
+            for r in range(N - 2, -1, -1):
+                if board[r][c]:
+                    temp = board[r][c]
+                    board[r][c] = 0
+                    if board[idx][c] == 0:
+                        board[idx][c] = temp
+                    elif board[idx][c] == temp:
+                        board[idx][c] = temp * 2
+                        idx -= 1
+                    else:
+                        idx -= 1
+                        board[idx][c] = temp
+
+    elif det == 2:
+        for r in range(N):
+            idx = 0
+            for c in range(1, N):
+                if board[r][c]:
+                    temp = board[r][c]
+                    board[r][c] = 0
+                    if board[r][idx] == 0:
+                        board[r][idx] = temp
+                    elif board[r][idx] == temp:
+                        board[r][idx] = temp * 2
+                        idx += 1
+                    else:
+                        idx += 1
+                        board[r][idx] = temp
+
+    else:
+        for r in range(N):
+            idx = N - 1
+            for c in range(N - 2, -1, -1):
+                if board[r][c]:
+                    temp = board[r][c]
+                    board[r][c] = 0
+                    if board[r][idx] == 0:
+                        board[r][idx] = temp
+                    elif board[r][idx] == temp:
+                        board[r][idx] = temp * 2
+                        idx -= 1
+                    else:
+                        idx -= 1
+                        board[r][idx] = temp
+
+def dfs(count):
+    global ans,board
+    if count == 5:
+        for i in range(N):
+            ans = max(ans,max(board[i]))
+        return
+
+    tmp_board = copy.deepcopy(board)
+    for i in range(4):
+        move(i)
+        dfs(count+1)
+        board = copy.deepcopy(tmp_board)
+
+dfs(0)
+print(ans)
