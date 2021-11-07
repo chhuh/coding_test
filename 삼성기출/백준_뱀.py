@@ -1,56 +1,64 @@
 import sys
+import copy
 
-N, M = map(int, sys.stdin.readline().split())
-B = [list(sys.stdin.readline().rstrip()) for _ in range(N)]
+N = int(sys.stdin.readline())
+K = int(sys.stdin.readline())
 
-dr = [0, 0, -1, 1]
-dc = [-1, 1, 0, 0]
+apple = [list(map(int, sys.stdin.readline().rstrip().split())) for _ in range(K)]
 
-queue = []
-visited = [[[[False] * M for _ in range(N)] for _ in range(M)] for _ in range(N)]
+L = int(sys.stdin.readline())
 
-def init():
-    rr, rc, br, bc = 0, 0, 0, 0  # 초기화
-    for r in range(N):
-        for c in range(M):
-            if B[r][c] == 'R':
-                rr, rc = r, c
-            elif B[r][c] == 'B':
-                br, bc = r, c
-    queue.append((rr, rc, br, bc, 1))
-    visited[rr][rc][br][bc] = True
+temp_arrows = [list(sys.stdin.readline().split()) for _ in range(L)]
 
-def tilt(r, c, dr, dc):
-    cnt = 0
-    while B[r+dr][c+dc] != '#' and B[r][c] != 'O':
-        r += dr
-        c += dc
-        cnt += 1
-    return r, c, cnt
+arrows = dict()
 
-def bfs():
-    init()
-    while queue:
-        rr, rc, br, bc, depth = queue.pop(0)
-        if depth > 10:
-            break
-        for i in range(4):
-            nrr, nrc, rcnt = tilt(rr, rc, dr[i], dc[i])
-            nbr, nbc, bcnt = tilt(br, bc, dr[i], dc[i])
-            if B[nbr][nbc] != 'O':
-                if B[nrr][nrc] == 'O':
-                    print(depth)
-                    return
-                if nrr == nbr and nrc == nbc:
-                    if rcnt > bcnt:
-                        nrr -= dr[i]
-                        nrc -= dc[i]
-                    else:
-                        nbr -= dr[i]
-                        nbc -= dc[i]
-                if not visited[nrr][nrc][nbr][nbc]:
-                    visited[nrr][nrc][nbr][nbc] = True
-                    queue.append((nrr, nrc, nbr, nbc, depth+1))
-    print(-1)
+for arrow in temp_arrows:
+    arrows[int(arrow[0])] = arrow[1]
 
-bfs()
+time = 0
+
+my_arrow = 0
+
+snake = [[1,1]]
+
+dr = [0,1,0,-1]
+dc = [1,0,-1,0]
+
+
+
+while True:
+    temp = copy.deepcopy(snake[-1])
+    temp = [temp[0]+dr[my_arrow], temp[1] + dc[my_arrow]]
+
+    time += 1
+
+    # 종료조건
+    if temp in snake:
+        print(time)
+        break
+
+    elif temp[0] > N or temp[1] > N or temp[0] < 1 or temp[1] < 1:
+        print(time)
+        break
+
+    # 종료가 아닌경우
+    snake.append(temp)
+    
+    if snake[-1] in apple:
+        apple.remove(snake[-1])
+    else:
+        snake.pop(0)
+
+    # 방향전환
+    if time in arrows.keys():
+        if arrows[time] == "D":
+            if my_arrow == 3:
+                my_arrow = 0
+            else:
+                my_arrow += 1
+        else:
+            if my_arrow == 0:
+                my_arrow = 3
+            else:
+                my_arrow -= 1
+
